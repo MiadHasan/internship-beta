@@ -1,4 +1,5 @@
 import User from "../models/user.js";
+import bcrypt from "bcrypt";
 
 export const createUser = async (req, res) => {
   const newUser = new User(req.body);
@@ -13,8 +14,11 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   const user = req.body;
   const id = req.params.id;
+  if (user.hasOwnProperty("password")) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, user);
+    const updatedUser = await User.findByIdAndUpdate(id, user, { new: true });
     res.status(200).json(updatedUser);
   } catch (err) {
     res.status(404).json(err);
