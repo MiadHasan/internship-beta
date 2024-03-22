@@ -30,3 +30,25 @@ export const getUserById = async (req, res) => {
     res.status(404).json(err);
   }
 };
+
+export const deleteUser = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const user = await User.findByIdAndDelete(id);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+};
+
+export const getUsers = async (req, res) => {
+  const page = parseInt(req.query.page);
+  const size = parseInt(req.query.size);
+  const startIndex = (page - 1) * size;
+  try {
+    const users = await User.find().limit(size).skip(startIndex);
+    res.status(200).json({ users: users });
+  } catch (err) {
+    res.status(404).json(err);
+  }
+};
